@@ -1,7 +1,7 @@
 var express    = require("express");
 var morgan     = require("morgan");
 var bodyParser = require("body-parser");
-const raspi    = require("raspi").init;
+var raspi    = require("raspi");
 const Serial   = require("raspi-serial").Serial;
 var async      = require("async");
 
@@ -20,7 +20,7 @@ raspi.init(()=>{
         baudRate: 9600
     });
 
-    serial.open(()=> {
+    serial.open( ()=> {
       var zones = {};
 
       serial.write("?10\r");
@@ -33,9 +33,10 @@ raspi.init(()=>{
             next();
       });
 
-      serial.on('data', (data) => {
+      serial.on('data', function(data) {
         console.log(data);
-        var zone = data.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+
+        var zone = data.toString('utf8').match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
         if (zone != null) {
           zones[zone[1]] = {
             "zone": zone[1],
