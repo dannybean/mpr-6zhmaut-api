@@ -42,7 +42,7 @@ raspi.init(()=>{
             bufferEnd++;
             if (b == 0x0D) {
                 buffer = buffer + data.toString('utf8', bufferStart, bufferEnd);
-                console.log('Found CR, processing: ' + buffer);
+                console.log('Found CR, processing: ' + buffer + '.');
                 const zone = buffer.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
                 if (zone != null) {
                     zones[zone[1]] = {
@@ -64,6 +64,8 @@ raspi.init(()=>{
             }
         }
         buffer = buffer + data.toString('utf8', bufferStart);
+        bufferStart = 0;
+        bufferEnd = 0;
       });
 
       app.get('/zones', function(req, res) {
