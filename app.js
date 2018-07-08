@@ -104,6 +104,7 @@ raspi.init(()=>{
       });
 
       app.get('/zones/:zone', function(req, res) {
+          console.log('Retreiving zone ' + req.zone);
         async.until(
           function () { return typeof zones[req.zone] !== "undefined"; },
           function (callback) {
