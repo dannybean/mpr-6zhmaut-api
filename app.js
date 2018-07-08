@@ -37,13 +37,11 @@ raspi.init(()=>{
       var bufferStart = 0;
       var bufferEnd = 0;
       serial.on('data', function(data) {
-          console.log(data);
         for (const b of data) {
             bufferEnd++;
             if (b == 0x0D) {
                 buffer = buffer + data.toString('utf8', bufferStart, bufferEnd);
                 const zone = buffer.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
-                console.log('Zone: ' + zone);
                 if (zone != null) {
                     zones[zone[1]] = {
                         "zone": zone[1],
@@ -95,7 +93,8 @@ raspi.init(()=>{
 
       // Only allow query and control of single zones
       app.param('zone', function(req, res, next, zone) {
-          if (zone % 10 > 0 && zone % 10 <= 6 && Number(zone) != "NaN" && Math.floor(zone / 10) > 0 && Math.floor(zone / 10) <= AmpCount) {
+          if (Number(zone) != "NaN" && zone % 10 > 0 && zone % 10 <= 6 &&
+              Math.floor(zone / 10) > 0 && Math.floor(zone / 10) <= AmpCount) {
               req.zone = zone;
               next();
           } else {
@@ -104,7 +103,6 @@ raspi.init(()=>{
       });
 
       app.get('/zones/:zone', function(req, res) {
-          console.log('Retreiving zone ' + req.zone);
         async.until(
           function () { return typeof zones[req.zone] !== "undefined"; },
           function (callback) {
