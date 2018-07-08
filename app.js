@@ -33,13 +33,17 @@ raspi.init(()=>{
             next();
       });
 
-      var buffer = Buffer.alloc(100);
+      var buffer = '';
+      var bufferStart = 0;
+      var bufferEnd = 0;
       serial.on('data', function(data) {
+          console.log(data);
         for (const b of data) {
-            buffer.write(b);
+            bufferEnd++;
             if (b == 0x0D) {
-                console.log("found CR, processing " + buffer);
-                const zone = buffer.toString('utf8').match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+                buffer = buffer + data.toString('utf8', bufferStart, bufferEnd);
+                console.log('Found CR, processing: ' + buffer);
+                const zone = buffer.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
                 if (zone != null) {
                     zones[zone[1]] = {
                         "zone": zone[1],
@@ -55,9 +59,11 @@ raspi.init(()=>{
                         "ls": zone[11]
                     };
                 }
-                buffer = Buffer.alloc(100);
+                buffer = '';
+                bufferStart = bufferEnd;
             }
         }
+        buffer = buffer + data.toString('utf8', bufferStart);
       });
 
       app.get('/zones', function(req, res) {
