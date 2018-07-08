@@ -33,24 +33,29 @@ raspi.init(()=>{
             next();
       });
 
+      var buffer = Buffer.alloc(100);
       serial.on('data', function(data) {
-        console.log(data);
-
-        var zone = data.toString('utf8').match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
-        if (zone != null) {
-          zones[zone[1]] = {
-            "zone": zone[1],
-            "pa": zone[2],
-            "pr": zone[3],
-            "mu": zone[4],
-            "dt": zone[5],
-            "vo": zone[6],
-            "tr": zone[7],
-            "bs": zone[8],
-            "bl": zone[9],
-            "ch": zone[10],
-            "ls": zone[11]
-          };
+        for (const b of data) {
+            buffer.write(b);
+            if (b == 0x0D) {
+                const zone = data.toString('utf8').match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+                if (zone != null) {
+                    zones[zone[1]] = {
+                        "zone": zone[1],
+                        "pa": zone[2],
+                        "pr": zone[3],
+                        "mu": zone[4],
+                        "dt": zone[5],
+                        "vo": zone[6],
+                        "tr": zone[7],
+                        "bs": zone[8],
+                        "bl": zone[9],
+                        "ch": zone[10],
+                        "ls": zone[11]
+                    };
+                }
+                buffer = Buffer.alloc(100);
+            }
         }
       });
 
