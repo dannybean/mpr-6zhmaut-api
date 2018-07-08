@@ -38,7 +38,8 @@ raspi.init(()=>{
         for (const b of data) {
             buffer.write(b);
             if (b == 0x0D) {
-                const zone = data.toString('utf8').match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+                console.log("found CR, processing " + buffer);
+                const zone = buffer.toString('utf8').match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
                 if (zone != null) {
                     zones[zone[1]] = {
                         "zone": zone[1],
