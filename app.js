@@ -95,12 +95,12 @@ raspi.init(()=>{
 
       // Only allow query and control of single zones
       app.param('zone', function(req, res, next, zone) {
-        if (zone % 10 > 0 && Number(zone) != "NaN") {
-          req.zone = zone;
-          next();
-        } else {
-          res.status(500).send({ error: zone + ' is not a valid zone'});
-        }
+          if (zone % 10 > 0 && zone % 10 <= 6 && Number(zone) != "NaN" && Math.floor(zone / 10) > 0 && Math.floor(zone / 10) <= AmpCount) {
+              req.zone = zone;
+              next();
+          } else {
+              res.status(500).send({error: zone + ' is not a valid zone'});
+          }
       });
 
       app.get('/zones/:zone', function(req, res) {
